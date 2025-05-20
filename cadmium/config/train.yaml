@@ -1,0 +1,84 @@
+ # ---------------------------------------------------------------------------- #
+ #                      Config for Text2CAD Model Training                      #
+ # ---------------------------------------------------------------------------- #
+ 
+seed: 42
+
+# ----------------------- Experiment name -------------------------------------- #
+name: "2025-05-12-00"
+ 
+# ---------------------- Configuration for data -------------------------------- #
+data:
+  base_dir: "/network/scratch/b/baldelld/LLM4CAD/cadmium/data/cadmium"
+  train_qwen_tokenized_parquet_path: '${data.base_dir}/train_json_qwen_tokenized.parquet' 
+  validation_qwen_tokenized_parquet_path: "${data.base_dir}/validation_json_qwen_tokenized.parquet"
+  test_qwen_tokenized_parquet_path: "${data.base_dir}/test_json_qwen_tokenized.parquet"
+  max_workers : 32
+  max_n_datapoints_val : 1024
+  max_length: 4096
+  shuffle: True
+
+# ---------------------- Configuration for model ------------------------------ #
+model:
+  size: 14
+  model_name : "Qwen/Qwen2.5-Coder-${model.size}B-Instruct"
+  lora: 
+    r: 64
+    lora_alpha: 16
+    target_modules: "all-linear"
+    lora_dropout: 0.1
+    bias: "none"
+    task_type: "CAUSAL_LM"
+
+# --------------------- Configuration related to training -------------------- #
+wandb:
+  name: "${name}"
+  runid: "${name}"
+
+training:
+  output_dir: "../experiments/${name}"
+  report_to: "wandb"
+  # report_to: "all"
+  label_names: ["labels"]
+  remove_unused_columns: False
+  fsdp: ["full_shard", "auto_wrap"]
+  fsdp_config:
+    min_num_params: 1_000_000
+    xla: False
+    xla_fsdp_grad_ckpt: False
+    xla_fsdp_v2: False
+    fsdp_activation_checkpointing: True
+    fsdp_cpu_ram_efficient_offload: False
+    fsdp_sync_module_states: True
+    fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+    fsdp_backward_prefetch_policy: BACKWARD_PRE
+    fsdp_forward_prefetch: false
+    fsdp_cpu_ram_efficient_loading: true
+    fsdp_offload_params: false
+    fsdp_sharding_strategy: FULL_SHARD
+    fsdp_state_dict_type: SHARDED_STATE_DICT
+    fsdp_transformer_layer_cls_to_wrap: Qwen2DecoderLayer
+    fsdp_use_orig_params: true
+  per_device_train_batch_size: 4              # adjust based on your hardware
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 1              # effective batch size becomes 16
+  gradient_checkpointing: False
+  learning_rate: 2e-4                         # recommended for LoRA fine tuning
+  num_train_epochs: 4                         # start with 1 epoch; monitor and adjust if needed
+  max_steps: -1                               # overrides num_train_epochs if != -1
+  warmup_steps: 100
+  fp16: True                                  # or bf16 depending on your GPU
+  eval_strategy: "steps"
+  eval_steps: 4000
+  logging_steps: 50
+  logging_first_step: True
+  save_steps: 1000
+  max_grad_norm: 0.3
+  save_total_limit: 100
+  weight_decay: 0.001  
+  lr_scheduler_type: "cosine"
+
+
+# ------------------------------ Debug mode flag ----------------------------- #
+debug: False
+

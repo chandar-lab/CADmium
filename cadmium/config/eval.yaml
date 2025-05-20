@@ -1,0 +1,25 @@
+seed: 42
+ 
+# ---------------------- Configuration for data -------------------------------- #
+data:
+  base_dir: "/network/scratch/b/baldelld/LLM4CAD/cadmium/data/cadmium"
+  qwen_tokenized_parquet_path: "${data.base_dir}/${data.eval_split}_json_qwen_tokenized.parquet"
+  max_workers : 32
+  max_n_datapoints: 0            # 0 means no limit
+  max_length: 4096
+  eval_split: "test"          # test or validation or fusion360
+
+# ---------------------- Configuration for model ------------------------------ #
+model:
+  checkpoint: "2025-05-12-00"
+  steps: "29576"
+  model_checkpoint : "/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/experiments/${model.checkpoint}/checkpoint-${model.steps}"
+
+# --------------------- Configuration related to training -------------------- #
+eval:
+  output_dir: "../data/results/${model.checkpoint}-${model.steps}-checkpoint-${data.eval_split}/"
+  #  output_dir: "../data/results/${model.checkpoint}-${model.steps}-checkpoint-t2c-${data.eval_split}/"
+  batch_size: 8   
+  max_new_tokens: 4096     
+  save_per_batch: True  
+  do_sample: False

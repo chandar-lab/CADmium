@@ -1,0 +1,8 @@
+api_keys_path: "/home/mila/b/baldelld/scratch/.api_keys"
+
+data:
+  base_dir: "/network/scratch/b/baldelld/LLM4CAD/cadmium/data/"
+  output_dir: "${data.base_dir}/fusion360_annotations/"
+
+model:
+  model_id: "gpt-4.1"

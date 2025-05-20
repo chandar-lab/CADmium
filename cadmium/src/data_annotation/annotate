@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH --job-name=gpt_annot
+#SBATCH --partition=main-cpu
+#SBATCH --time=24:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1            
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --output=outputs/annot_%j.out
+#SBATCH --error=errors/annot_images_%j.err
+
+module load anaconda/3
+conda activate $SCRATCH/cadmium
+
+N_SPLITS=1
+
+for IDX_SPLIT in $(seq 0 $((N_SPLITS-1))); do
+    python annotate_fusion360.py +n_splits=$N_SPLITS +idx_split=$IDX_SPLIT &
+done
+
+wait
