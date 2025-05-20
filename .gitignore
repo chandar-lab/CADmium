@@ -1,0 +1,33 @@
+# Ignore CSV files and checkpoint directories
+*.csv
+ckpts/
+
+# Ignore data directories
+data/
+datasets/
+**/jsons/
+**/output/
+**/outpus/
+**/wandb/
+**/error/
+**/.hydra/
+**/experiments/
+**/wandb/
+**/cadmium.egg-info/
+
+# Other folders to ignore
+hub/
+stored_tokens/
+token/
+.cache/
+outputs/
+logs/
+
+# Ignore all __pycache__ directories (wherever they occur)
+**/__pycache__/
+**/data_subsamples/
+**/jay_drive/
+
+**/tokens*
+**/.env
+**/xet

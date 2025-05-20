@@ -13,8 +13,8 @@ from datasets import load_dataset, Dataset
 import torch.distributed as dist
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 
-from cadmium.utils.customtrainer import OrderedSFTTrainer
-from cadmium.utils.warmstabledecay import WarmStableDecayScheduler, WarmStableDecayCallback
+from cadmium.src.utils.customtrainer import OrderedSFTTrainer
+from cadmium.src.utils.warmstabledecay import WarmStableDecayScheduler, WarmStableDecayCallback
 
 @hydra.main(version_base=None, config_path="../config", config_name="config_json_train")
 def main(config: DictConfig):

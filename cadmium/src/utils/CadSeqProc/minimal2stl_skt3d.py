@@ -14,7 +14,7 @@ import torch
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
-from cadmium.utils.macro import small_val_uids
+from cadmium.src.utils.macro import small_val_uids
   # ---------------------------------------------------------------------------- #
   #            DeepCAD Original Json or Vec to Mesh + 3D Sketch Points           #
   # ---------------------------------------------------------------------------- #

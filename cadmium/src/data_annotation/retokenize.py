@@ -194,8 +194,8 @@ print('Dataset created')
 print(dataset)
 
 from datasets import load_dataset
-from cadmium.utils.prompts import SYSTEM_MESSAGE, SYSTEM_MESSAGES
-from cadmium.utils.utils import process_batch
+from cadmium.src.utils.prompts import SYSTEM_MESSAGE, SYSTEM_MESSAGES
+from cadmium.src.utils.utils import process_batch
 from transformers import AutoTokenizer
 from omegaconf import OmegaConf
 

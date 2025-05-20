@@ -13,8 +13,8 @@ from trl import SFTConfig, SFTTrainer
 from trl import apply_chat_template
 from datasets import load_dataset
 from models.loss import CELoss
-from cadmium.utils.logger import CLGLogger
-from cadmium.utils.utils import process_sample, process_batch, find_sublist
+from cadmium.src.utils.logger import CLGLogger
+from cadmium.src.utils.utils import process_sample, process_batch, find_sublist
 from torch.utils.tensorboard import SummaryWriter
 import torch
 import torch
@@ -29,15 +29,15 @@ import datetime
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
-from cadmium.codes.dataprep.t2c_dataset import Text2CADJSON_Dataset
+from cadmium.src.dataprep.t2c_dataset import Text2CADJSON_Dataset
 import random
 from models.metrics import AccuracyCalculator
 from loguru import logger
 import gc
-from cadmium.utils.evaluate import switch_system_message, evaluate_model, PredictionsLoader
-# from cadmium.utils.save_result_jsons import process_results
-from cadmium.utils.prompts import SYSTEM_MESSAGE, SYSTEM_MESSAGES
-from cadmium.utils.macro import (END_TOKEN, 
+from cadmium.src.utils.evaluate import switch_system_message, evaluate_model, PredictionsLoader
+# from cadmium.src.utils.save_result_jsons import process_results
+from cadmium.src.utils.prompts import SYSTEM_MESSAGE, SYSTEM_MESSAGES
+from cadmium.src.utils.macro import (END_TOKEN, 
                                 MAX_CAD_SEQUENCE_LENGTH, 
                                 CAD_CLASS_INFO, 
                                 )

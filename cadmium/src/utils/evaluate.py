@@ -7,7 +7,7 @@ import copy
 import json
 import os
 import re
-from cadmium.utils.macro import CAD_CLASS_INFO, END_TOKEN, DATA_DIR
+from cadmium.src.utils.macro import CAD_CLASS_INFO, END_TOKEN, DATA_DIR
 
 from copy import copy
 import hashlib
@@ -23,8 +23,8 @@ from peft import LoraConfig, get_peft_model
 from trl import SFTConfig, SFTTrainer
 from trl import apply_chat_template
 from datasets import load_dataset
-from cadmium.utils.logger import CLGLogger
-from cadmium.utils.utils import find_sublist
+from cadmium.src.utils.logger import CLGLogger
+from cadmium.src.utils.utils import find_sublist
 from torch.utils.tensorboard import SummaryWriter
 import torch
 import torch
@@ -39,12 +39,12 @@ import datetime
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
-from cadmium.codes.dataprep.t2c_dataset import Text2CADJSON_Dataset
+from cadmium.src.dataprep.t2c_dataset import Text2CADJSON_Dataset
 from transformers import get_linear_schedule_with_warmup
 import random
 import gc
-from cadmium.utils.prompts import SYSTEM_MESSAGE
-from cadmium.utils.macro import (END_TOKEN, 
+from cadmium.src.utils.prompts import SYSTEM_MESSAGE
+from cadmium.src.utils.macro import (END_TOKEN, 
                                 MAX_CAD_SEQUENCE_LENGTH, 
                                 CAD_CLASS_INFO, 
                                 )
@@ -154,7 +154,7 @@ def collate_fn(batch):
 def process_sample(sample, tokenizer, config):
     """
     Process a single sample from the dataset.
-    Extracts and decodes the true response, finds marker indices,
+    Extracts and desrc the true response, finds marker indices,
     crops the input up to the assistant marker, and returns a dictionary
     containing all relevant data needed for generation.
     """

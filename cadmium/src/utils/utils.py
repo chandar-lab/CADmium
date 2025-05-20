@@ -6,7 +6,7 @@ import copy
 import json
 import os
 import re
-from cadmium.utils.macro import CAD_CLASS_INFO, END_TOKEN
+from cadmium.src.utils.macro import CAD_CLASS_INFO, END_TOKEN
 
 
 def count_parameters(model, description=True):

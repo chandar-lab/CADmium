@@ -1,5 +1,5 @@
 
-This folder contains codes for processing the DeepCAD Jsons.
+This folder contains src for processing the DeepCAD Jsons.
 
 
 ### 1. Json to Vector Representation
