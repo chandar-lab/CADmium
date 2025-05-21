@@ -63,13 +63,13 @@ To run inference with a trained model:
 torchrun --nproc_per_node=N cadmium/src/predict.py --config-name predict
 ```
 
-Where `N` is the number of GPUs to use. Key features:
+Where `N` is the number of GPUs to use. 
 
-- **Device Flexibility:** Works with 1+ GPUs without code changes
-- **Output Structure:** Predictions are saved in `data/results/` with:
+- It works with 1+ GPUs without code changes
+- Predictions are saved in `data/results/` with:
   - Individual JSON files per sample when using `save_per_batch=True`
   - Consolidated CSV results after all batches complete
-- **Configuration:** Modify `cadmium/config/predict.yaml` to adjust:
+- Modify `cadmium/config/predict.yaml` to adjust:
   - Batch size (`eval.batch_size`)
   - Generation parameters (temperature, top-p, etc.)
   - Output directory paths
