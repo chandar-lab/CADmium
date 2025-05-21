@@ -38,4 +38,7 @@ To process and tokenize the dataset:
     The script saves tokenized data into three Parquet files (train, validation, test splits) in the `data/` folder (e.g., `data/train_json_qwen_tokenized.parquet`).
 
 (Rest of your README: Usage, Contributing, License, etc.)
-```
+
+## License
+
+Licensed under the MIT License.
