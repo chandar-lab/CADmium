@@ -5,22 +5,21 @@
 seed: 42
 
 # ----------------------- Experiment name -------------------------------------- #
-name: "2025-05-12-00"
+name: "train_cadmium"
  
 # ---------------------- Configuration for data -------------------------------- #
 data:
-  base_dir: "/network/scratch/b/baldelld/LLM4CAD/cadmium/data/cadmium"
+  base_dir: "data"
   train_qwen_tokenized_parquet_path: '${data.base_dir}/train_json_qwen_tokenized.parquet' 
   validation_qwen_tokenized_parquet_path: "${data.base_dir}/validation_json_qwen_tokenized.parquet"
   test_qwen_tokenized_parquet_path: "${data.base_dir}/test_json_qwen_tokenized.parquet"
   max_workers : 32
   max_n_datapoints_val : 1024
   max_length: 4096
-  shuffle: True
 
 # ---------------------- Configuration for model ------------------------------ #
 model:
-  size: 14
+  size: 1.5
   model_name : "Qwen/Qwen2.5-Coder-${model.size}B-Instruct"
   lora: 
     r: 64

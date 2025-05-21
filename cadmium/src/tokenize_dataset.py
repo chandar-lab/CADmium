@@ -1,106 +1,62 @@
 from copy import copy
-import hashlib
-import json
 import os
-import wandb
-from pathlib import Path
-
 import hydra
-from omegaconf import DictConfig, OmegaConf
-from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed, TrainingArguments, Trainer
-from peft import LoraConfig, get_peft_model
-from trl import SFTConfig, SFTTrainer
-from trl import apply_chat_template
-from datasets import load_dataset, Dataset
-from models.loss import CELoss
-from cadmium.src.utils.logger import CLGLogger
-from torch.utils.tensorboard import SummaryWriter
-import torch
-from tqdm import tqdm
-import numpy as np
-import datetime
-from cadmium.src.utils.evaluate import switch_system_message, evaluate_model
-from cadmium.src.utils.prompts import SYSTEM_MESSAGE, SYSTEM_MESSAGES
-from datasets import Dataset
-from huggingface_hub import login
-
-# from peft import LoraConfig
-
-from cadmium.src.dataprep.t2c_dataset import Text2CADJSON_Dataset
-from transformers import AdamW, get_linear_schedule_with_warmup
-import random
-from models.metrics import AccuracyCalculator
-from loguru import logger
+from omegaconf import DictConfig
+from transformers import AutoTokenizer
+from datasets import load_from_disk
 from cadmium.src.utils.prompts import SYSTEM_MESSAGE
-from cadmium.src.utils.macro import (END_TOKEN, 
-                                MAX_CAD_SEQUENCE_LENGTH, 
-                                CAD_CLASS_INFO, 
-                                )
+
 
 @hydra.main(version_base=None, config_path="../config", config_name="process_data")
 def main(config: DictConfig):
+    original_cwd = hydra.utils.get_original_cwd()
+
     # ----------------- Loading the model -----------------
-    SYSTEM_MESSAGE = SYSTEM_MESSAGES['schema_imperative_noindent']
     print("Loading Tokenizer")
     tokenizer = AutoTokenizer.from_pretrained(config.model.model_name)
 
-    login(token="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")  # Or set HF_TOKEN env variable
-    dataset = load_dataset("LLM4CAD/LLM4CAD")
+    print("Loading datasets")
+    dataset = load_from_disk(config.data.dataset_path)
+    train_dataset = dataset["train"]
+    val_dataset = dataset["validation"]
+    test_dataset = dataset["test"]
 
-    if "train" in splits:
-        print("Loading Train Dataset")
-        train_dataset = Text2CADJSON_Dataset(
-            prompt_path=config.data.prompt_path,
-            json_desc_dir=config.data.json_desc_dir,
-            split_filepath=config.data.split_filepath,
-            subset="train",
-            max_workers=32,
-            #max_n_datapoints=config.data.max_n_datapoints_train,
-            verbose=False,
-        )
-
-    print("Processing datasets")
-    if "train" in splits:
-        processed_train_dataset = train_dataset.map(
-            lambda ex: process_batch(
-                ex, 
-                tokenizer, 
-                SYSTEM_MESSAGE, 
-                max_length=config.data.max_length),
-            batched=True
-        )
-    if "validation" in splits:
-        processed_val_dataset = val_dataset.map(
-            lambda ex: process_batch(
-                ex, 
-                tokenizer, 
-                SYSTEM_MESSAGE, 
-                max_length=config.data.max_length),
-            batched=True
-        )
-    if "test" in splits:
-        processed_test_dataset = test_dataset.map(
-            lambda ex: process_batch(
-                ex, 
-                tokenizer, 
-                SYSTEM_MESSAGE, 
-                max_length=config.data.max_length),
-            batched=True
-        )
+    print("Tokenizing datasets")
+    processed_train_dataset = train_dataset.map(
+        lambda ex: process_batch(
+            ex, 
+            tokenizer, 
+            SYSTEM_MESSAGE, 
+            max_length=config.data.max_length),
+        batched=True
+    )
+    processed_val_dataset = val_dataset.map(
+        lambda ex: process_batch(
+            ex, 
+            tokenizer, 
+            SYSTEM_MESSAGE, 
+            max_length=config.data.max_length),
+        batched=True
+    )
+    processed_test_dataset = test_dataset.map(
+        lambda ex: process_batch(
+            ex, 
+            tokenizer, 
+            SYSTEM_MESSAGE, 
+            max_length=config.data.max_length),
+        batched=True
+    )
    
     print("procesed dataset to parquet")
-    if "train" in splits:
-        processed_train_dataset.to_parquet(
-            config.data.train_qwen_tokenized_parquet_path, 
-        )
-    if "validation" in splits:
-        processed_val_dataset.to_parquet(
-            config.data.validation_qwen_tokenized_parquet_path, 
-        )
-    if "test" in splits:
-        processed_test_dataset.to_parquet(
-            config.data.test_qwen_tokenized_parquet_path, 
-        )
+    processed_train_dataset.to_parquet(
+        config.data.train_qwen_tokenized_parquet_path, 
+    )
+    processed_val_dataset.to_parquet(
+        config.data.validation_qwen_tokenized_parquet_path, 
+    )
+    processed_test_dataset.to_parquet(
+        config.data.test_qwen_tokenized_parquet_path, 
+    )
 
 def process_batch(examples, tokenizer, system_message, max_length=4096):
     """

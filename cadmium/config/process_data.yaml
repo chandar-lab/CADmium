@@ -2,18 +2,16 @@ seed: 42
  
 # ---------------------- Configuration for data -------------------------------- #
 data:
-  base_dir: "/network/scratch/b/baldelld/LLM4CAD/cadmium/data/text2cad_v1.1"
-  prompt_path : "${data.base_dir}/../text2cad_v1.0/text2cad_v1.0.csv"
-  json_desc_dir : "${data.base_dir}/jsons"
-  split_filepath : "${data.base_dir}/train_test_val.json"
-  train_qwen_tokenized_parquet_path: '${data.base_dir}/../text2cad_v1.0/train_json_qwen_tokenized.parquet'
-  validation_qwen_tokenized_parquet_path: "${data.base_dir}/../text2cad_v1.0/validation_json_qwen_tokenized.parquet"
-  test_qwen_tokenized_parquet_path: "${data.base_dir}/../text2cad_v1.0/test_json_qwen_tokenized.parquet"
+  base_dir: "data"
+  dataset_path: "${data.base_dir}/cadmium_ds"
+  train_qwen_tokenized_parquet_path: '${data.base_dir}/train_json_qwen_tokenized.parquet'
+  validation_qwen_tokenized_parquet_path: "${data.base_dir}/validation_json_qwen_tokenized.parquet"
+  test_qwen_tokenized_parquet_path: "${data.base_dir}/test_json_qwen_tokenized.parquet"
   max_length: 4096
-  max_n_datapoints_train: 10
-  max_n_datapoints_val: 10
-  max_n_datapoints_test: 10
+  # max_n_datapoints_train: 10
+  # max_n_datapoints_val: 10
+  # max_n_datapoints_test: 10
 
 # ---------------------- Configuration for model ------------------------------ #
 model:
-  model_name : "Qwen/Qwen2.5-Coder-7B-Instruct"
+  model_name : "Qwen/Qwen2.5-Coder-1.5B-Instruct"
