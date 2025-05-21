@@ -74,6 +74,57 @@ Where `N` is the number of GPUs to use.
   - Generation parameters (temperature, top-p, etc.)
   - Output directory paths
 
+
+## Data Annotation
+
+This process uses `GPT-4.1` via the OpenAI API to generate natural language descriptions for CAD modeling sequences. We utilize minimal JSONs representations and Blender renders from the [Text2CAD Hugging Face dataset](https://huggingface.co/datasets/SadilKhan/Text2CAD):  
+
+
+First of all, you need to download and extract renders and minimal jsons:
+```bash
+# Create directory structure
+mkdir -p data/text2cad_v1.1/{rgb_images,jsons}
+
+# RGB Images (20GB)
+python -c "
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='SadilKhan/Text2CAD',
+    allow_patterns='text2cad_v1.1/misc/rgb_images/*.zip',
+    local_dir='data/text2cad_v1.1/rgb_images',
+    repo_type='dataset'
+)"
+unzip data/text2cad_v1.1/rgb_images/text2cad_v1.1/misc/rgb_images/\*.zip -d data/text2cad_v1.1/rgb_images
+
+# Minimal JSON Descriptions
+python -c "
+from huggingface_hub import hf_hub_download
+hf_hub_download(
+    repo_id='SadilKhan/Text2CAD',
+    filename='text2cad_v1.1/misc/minimal_json/minimal_json_0000_0099.zip',
+    local_dir='data/text2cad_v1.1/jsons',
+    repo_type='dataset'
+)"
+unzip data/text2cad_v1.1/jsons/minimal_json_0000_0099.zip -d data/text2cad_v1.1/jsons
+
+# Cleanup zip files
+rm -rf data/text2cad_v1.1/{rgb_images,jsons}/text2cad_v1.1
+```
+
+Than, configure API access:
+```bash
+echo "OPENAI_API_KEY=your-key-here" > .env
+```
+
+And finally, run the annotation:
+```bash
+N_SPLITS=4  # Match to available CPU cores
+for IDX in $(seq 0 $((N_SPLITS-1))); do
+    python cadmium/src/annotate.py +n_splits=$N_SPLITS +idx_split=$IDX &
+done
+wait
+```
+
 ## License
 
 Licensed under the MIT License.

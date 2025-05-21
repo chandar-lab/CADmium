@@ -1,10 +1,11 @@
-api_keys_path: "/home/mila/b/baldelld/scratch/.api_keys"
+api_keys_path: ".env"
 
 data:
-  base_dir: "data/"
+  base_dir: "data"
   original_annotations: "${data.base_dir}/text2cad_v1.1/text2cad_v1.1.csv"
   validation_qwen_tokenized_parquet_path: "${data.base_dir}/text2cad_v1.1/validation_json_qwen_tokenized.parquet"
   output_dir: "${data.base_dir}/gpt_annotations/"
+  output_ds_path: "${data.base_dir}/cadmium_ds"
 
 model:
   model_id: "gpt-4.1"
