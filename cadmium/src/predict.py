@@ -7,45 +7,17 @@ from pathlib import Path
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
-from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed, TrainingArguments, Trainer
-from peft import LoraConfig, get_peft_model
-from trl import SFTConfig, SFTTrainer
-from trl import apply_chat_template
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import load_dataset
-from models.loss import CELoss
-from cadmium.src.utils.logger import CLGLogger
-from cadmium.src.utils.utils import process_sample, process_batch, find_sublist
-from torch.utils.tensorboard import SummaryWriter
 import torch
-import torch
-from torch.utils.data import DataLoader
-from torch.nn.utils.rnn import pad_sequence
-from tqdm import tqdm
 from datasets import Dataset
-from tqdm import tqdm
-import numpy as np
 import pandas as pd
 import datetime
 import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
+from cadmium.src.utils.evaluate import evaluate_model, PredictionsLoader
 
-from cadmium.src.dataprep.t2c_dataset import Text2CADJSON_Dataset
-import random
-from models.metrics import AccuracyCalculator
-from loguru import logger
-import gc
-from cadmium.src.utils.evaluate import switch_system_message, evaluate_model, PredictionsLoader
-# from cadmium.src.utils.save_result_jsons import process_results
-from cadmium.src.utils.prompts import SYSTEM_MESSAGE, SYSTEM_MESSAGES
-from cadmium.src.utils.macro import (END_TOKEN, 
-                                MAX_CAD_SEQUENCE_LENGTH, 
-                                CAD_CLASS_INFO, 
-                                )
-        
-
-@hydra.main(version_base=None, config_path="../config/", config_name="config_json_eval")
+@hydra.main(version_base=None, config_path="../config/", config_name="predict")
 def main(config: DictConfig):
-    print("Entered the main")
     os.makedirs(config.eval.output_dir, exist_ok=True)
     config_to_save = OmegaConf.to_container(config, resolve=True)
     with open(os.path.join(config.eval.output_dir, 'config.json'), 'w') as f:
@@ -61,14 +33,16 @@ def main(config: DictConfig):
     device = torch.device(f"cuda:{local_rank}" if torch.cuda.is_available() else "cpu")
     if "LOCAL_RANK" in os.environ:
         dist.init_process_group(backend="nccl", timeout=datetime.timedelta(seconds=60*60))
+    print(f"[PID {os.getpid():5d}] PRE‐DIST  RANK={os.environ.get('RANK', 0)}  LOCAL_RANK={local_rank}  WORLD_SIZE={os.environ.get('WORLD_SIZE', 1)}  -> cuda:{torch.cuda.current_device()}", flush=True)
 
     # ----------------- Loading the model -----------------
     model = AutoModelForCausalLM.from_pretrained(
         config.model.model_checkpoint, 
         torch_dtype=torch.float16,  
-        device_map=f"cuda:{local_rank}",  
-        )
+        ).to(device)
     tokenizer = AutoTokenizer.from_pretrained(config.model.model_checkpoint, padding_side='left')
+
+    print("Model device:", model.device, flush=True)
 
     # ----------------- Loading and Preprocessing the dataset -----------------
     data_path = config.data.qwen_tokenized_parquet_path
@@ -83,15 +57,6 @@ def main(config: DictConfig):
     if config.data.max_n_datapoints:
         ds = Dataset.from_dict(
             ds.shuffle(seed=config.seed)[:config.data.max_n_datapoints])
-
-    if hasattr(config, 'prompt'):
-        prompt = SYSTEM_MESSAGES[config.prompt]
-        print(F"PROMPT: \n{prompt}")
-        ds = switch_system_message(
-            ds, 
-            prompt, 
-            tokenizer
-            )
 
     res = evaluate_model(ds, tokenizer, model, config, output_dir=config.eval.output_dir, save_per_batch=config.eval.save_per_batch)
     if config.eval.save_per_batch:

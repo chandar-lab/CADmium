@@ -17,4 +17,4 @@ export HF_HOME=$SCRATCH/LLM4CAD
 conda activate $SCRATCH/cadmium
 export OMP_NUM_THREADS=4
 
-torchrun --nproc_per_node=4 eval_texttojson.py --config-name config_json_eval.yaml 
+torchrun --nproc_per_node=4 predict.py --config-name predict.yaml 

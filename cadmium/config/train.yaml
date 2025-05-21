@@ -5,7 +5,7 @@
 seed: 42
 
 # ----------------------- Experiment name -------------------------------------- #
-name: "train_cadmium"
+name: "cadmium-3B"
  
 # ---------------------- Configuration for data -------------------------------- #
 data:
@@ -34,9 +34,8 @@ wandb:
   runid: "${name}"
 
 training:
-  output_dir: "../experiments/${name}"
+  output_dir: "experiments/${name}"
   report_to: "wandb"
-  # report_to: "all"
   label_names: ["labels"]
   remove_unused_columns: False
   fsdp: ["full_shard", "auto_wrap"]

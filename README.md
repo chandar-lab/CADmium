@@ -53,6 +53,27 @@ The training configuration is defined in `cadmium/config/train.yaml`. By default
    - Single GPU: Set `per_device_batch_size=16` *or* increase `gradient_accumulation_steps=4` (with `per_device_batch_size=4`)
    - Intermediate GPUs: Adjust proportionally (e.g., 2 GPUs → `per_device_batch_size=8` or `gradient_accumulation_steps=2`)
 
+   Here's the enriched README with clear prediction instructions and device flexibility:
+
+## Generating Predictions
+
+To run inference with a trained model:
+
+```bash
+torchrun --nproc_per_node=N cadmium/src/predict.py --config-name predict
+```
+
+Where `N` is the number of GPUs to use. Key features:
+
+- **Device Flexibility:** Works with 1+ GPUs without code changes
+- **Output Structure:** Predictions are saved in `data/results/` with:
+  - Individual JSON files per sample when using `save_per_batch=True`
+  - Consolidated CSV results after all batches complete
+- **Configuration:** Modify `cadmium/config/predict.yaml` to adjust:
+  - Batch size (`eval.batch_size`)
+  - Generation parameters (temperature, top-p, etc.)
+  - Output directory paths
+
 ## License
 
 Licensed under the MIT License.

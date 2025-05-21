@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=train_text2cad
+#SBATCH --job-name=train_cadmum
 #SBATCH --output=output/experiment-%A.%a.out
 #SBATCH --error=error/experiment-%A.%a.err
 #SBATCH --time=0-03:00:00
-#SBATCH --nodes=1                       # number of nodes
-#SBATCH --gpus-per-task=4               # number of gpus per node
-#SBATCH --cpus-per-task=24              # number of cpus per gpu
-#SBATCH --mem=0                         # all memory per node
-#SBATCH --ntasks-per-node=1             # crucial - only 1 task per node!
-#SBATCH --constraint=80gb               # constraints
+#SBATCH --nodes=1                       
+#SBATCH --gpus-per-task=4               
+#SBATCH --cpus-per-task=24              
+#SBATCH --mem=0                         
+#SBATCH --ntasks-per-node=1             
+#SBATCH --constraint=80gb               
 #SBATCH --exclude=cn-k[001-002]
 #SBATCH --partition=short-unkillable
 

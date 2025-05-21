@@ -8,9 +8,6 @@ data:
   validation_qwen_tokenized_parquet_path: "${data.base_dir}/validation_json_qwen_tokenized.parquet"
   test_qwen_tokenized_parquet_path: "${data.base_dir}/test_json_qwen_tokenized.parquet"
   max_length: 4096
-  # max_n_datapoints_train: 10
-  # max_n_datapoints_val: 10
-  # max_n_datapoints_test: 10
 
 # ---------------------- Configuration for model ------------------------------ #
 model:
