@@ -85,7 +85,7 @@ First of all, you need to download and extract renders and minimal jsons:
 # Create directory structure
 mkdir -p data/text2cad_v1.1/{rgb_images,jsons}
 
-# RGB Images (20GB)
+# RGB Images
 python -c "
 from huggingface_hub import snapshot_download
 snapshot_download(
