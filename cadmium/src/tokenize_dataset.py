@@ -6,8 +6,7 @@ from transformers import AutoTokenizer
 from datasets import load_from_disk
 from cadmium.src.utils.prompts import SYSTEM_MESSAGE
 
-
-@hydra.main(version_base=None, config_path="../config", config_name="process_data")
+@hydra.main(version_base=None, config_path="../config", config_name="tokenize_dataset")
 def main(config: DictConfig):
     original_cwd = hydra.utils.get_original_cwd()
 
@@ -47,7 +46,7 @@ def main(config: DictConfig):
         batched=True
     )
    
-    print("procesed dataset to parquet")
+    print("processed dataset to parquet")
     processed_train_dataset.to_parquet(
         config.data.train_qwen_tokenized_parquet_path, 
     )

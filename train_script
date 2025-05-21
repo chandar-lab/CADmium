@@ -14,15 +14,8 @@
 
 module load anaconda/3
 export HF_HOME=$SCRATCH/LLM4CAD
-conda activate $SCRATCH/cadmium2
+conda activate $SCRATCH/cadmium
 export OMP_NUM_THREADS=4
 
-experiment_name="2025-05-12-00"
-
-checkpoint_dir="../experiments/${experiment_name}/"
-
-# Get initial latest checkpoint directory
-latest_checkpoint=$(ls -td ${checkpoint_dir}/checkpoint-* 2>/dev/null | head -n 1)
-
 # Start training in background
-srun torchrun --nproc_per_node=4 train_texttojson_2.py --config-name ${experiment_name} #&
+srun torchrun --nproc_per_node=4 cadmium/src/train.py --config-name train

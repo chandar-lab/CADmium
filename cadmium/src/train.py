@@ -5,18 +5,14 @@ import wandb
 import hydra
 import omegaconf
 from omegaconf import DictConfig, OmegaConf
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, set_seed, TrainingArguments, Trainer
-from transformers.trainer_utils import IntervalStrategy, get_last_checkpoint
-from peft import LoraConfig, get_peft_model
+from transformers import AutoModelForCausalLM, BitsAndBytesConfig, set_seed, TrainingArguments
+from transformers.trainer_utils import get_last_checkpoint
 from trl import SFTTrainer
 from datasets import load_dataset, Dataset
 import torch.distributed as dist
-from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+from peft import LoraConfig
 
-from cadmium.src.utils.customtrainer import OrderedSFTTrainer
-from cadmium.src.utils.warmstabledecay import WarmStableDecayScheduler, WarmStableDecayCallback
-
-@hydra.main(version_base=None, config_path="../config", config_name="config_json_train")
+@hydra.main(version_base=None, config_path="../config", config_name="train")
 def main(config: DictConfig):
     set_seed(config.seed)
 
@@ -40,25 +36,22 @@ def main(config: DictConfig):
     print(f"[PID {os.getpid():5d}] PRE‐DIST  RANK={rank}  LOCAL_RANK={local_rank}  WORLD_SIZE={world_size}  -> cuda:{torch.cuda.current_device()}", flush=True)
 
     # ----------------- Wandb init -----------------
-
     # Only initialize wandb in the main process
     if local_rank == 0:
         wandb.init(
             project="cadmium",
-            id=config.wandb.runid,    # Ensure this matches your resumed run if needed
+            id=config.wandb.runid,    
             name=config.wandb.name,
-            resume="allow",  # or "must" if you want an error when the run doesn't exist
+            resume="allow",  
         )
 
     # ----------------- Loading the model -----------------
-    
     using_fsdp = hasattr(config.training, 'fsdp') and config.training.fsdp is not None
     model = AutoModelForCausalLM.from_pretrained(
         config.model.model_name, 
-        device_map="cpu", # None if using_fsdp else {"": f"cuda:{local_rank}"},
+        device_map="cpu", 
         **({"quantization_config": BitsAndBytesConfig(**config.model.quantize)} if hasattr(config.model, 'quantize') else {"torch_dtype": torch.float16})
         )
-    tokenizer = AutoTokenizer.from_pretrained(config.model.model_name)
 
     # ----------------- Loading the tokenized dataset -----------------
     train_ds = load_dataset(
@@ -73,10 +66,6 @@ def main(config: DictConfig):
         })
     processed_train_dataset, processed_val_dataset = train_ds['train'], val_ds['validation']
     
-    if config.data.shuffle:
-        processed_train_dataset = processed_train_dataset.shuffle(seed=config.seed)
-        processed_val_dataset = processed_val_dataset.shuffle(seed=config.seed)
-
     # ----------------- Eventually reduce val set -----------------
     if config.data.max_n_datapoints_val:
         processed_val_dataset = Dataset.from_dict(
@@ -100,14 +89,10 @@ def main(config: DictConfig):
 
     training_args = TrainingArguments(
         **config.training, 
-        # logging_dir=os.path.join(config.training.output_dir, "hf-logs"),
-        # log_level="info",
-        # log_level_replica="debug",
     )
 
     print("PEFT CONFIG:", peft_config, flush=True)
-    trainer_class = SFTTrainer if config.data.shuffle else OrderedSFTTrainer
-    trainer = trainer_class(
+    trainer = SFTTrainer(
         model=model,
         args=training_args,
         train_dataset=processed_train_dataset,
@@ -115,9 +100,9 @@ def main(config: DictConfig):
         peft_config=peft_config,
     )
 
-    # 1) Detect last warm checkpoint by inverting the cold checkpoint
-    output_dir     = config.training.output_dir
-    last_checkpoint    = get_last_checkpoint(output_dir)  # e.g. “…/checkpoint-40”
+    # Detect last checkpoint
+    output_dir = config.training.output_dir
+    last_checkpoint = get_last_checkpoint(output_dir)  # e.g. “…/checkpoint-40”
     if last_checkpoint:
         print(f"Last checkpoint found: {last_checkpoint}", flush=True)
     else:
@@ -125,8 +110,6 @@ def main(config: DictConfig):
         print("No checkpoint found, starting from scratch.", flush=True)
     
     trainer.train(resume_from_checkpoint=last_checkpoint)
-
-
 
 if __name__ == "__main__":
     main()
