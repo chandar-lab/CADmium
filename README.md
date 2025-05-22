@@ -5,7 +5,20 @@
 
 This repository implements the paper "*CADmium: Fine-Tuning Code Language Models for Text-Driven Sequential CAD Design*".
 
-## Quick Setup
+## 💾 Models and Datasets
+
+The fine-tuned models (**cadmium-1.5b**, **cadmium-3b**, **cadmium-7b**) and datasets (**cadmium_ds**, **fusion360_ds**) are available for download from the following anonymized Google Drive link:
+
+[Download Models and Datasets](https://drive.google.com/drive/folders/1V5q4uErjwrMYBkmDiU6HCHgRjCXenDfP?usp=share_link)
+
+The folder contains the following zip files:
+* `cadmium-1.5b-checkpoint-29576.zip`
+* `cadmium-3b-checkpoint-29576.zip`
+* `cadmium-7b-checkpoint-29576.zip`
+* `cadmium_ds.zip`
+* `fusion360_ds.zip`
+
+## 🚀 Quick Setup  
 
 Ensure Anaconda (or Miniconda) is installed. From the project root directory, run the following to create the environment and install dependencies:
 
@@ -22,7 +35,8 @@ pip install -e .
 
 This sequence sets up a local Conda environment in the `venv` subdirectory, activates it, and installs all required packages, including the project itself in editable mode.
 
-## Tokenizing the Dataset
+## 🔠 Tokenizing the Dataset  
+
 To process and tokenize the dataset:
 
 1.  **Prerequisites:**
@@ -37,7 +51,7 @@ To process and tokenize the dataset:
 3.  **Output:**
     The script saves tokenized data into three Parquet files (train, validation, test splits) in the `data/` folder (e.g., `data/train_json_qwen_tokenized.parquet`).
 
-## Training the Model
+## 🏋️ Training the Model  
 
 To train the model with the default configuration:
 
@@ -55,7 +69,7 @@ The training configuration is defined in `cadmium/config/train.yaml`. By default
 
    Here's the enriched README with clear prediction instructions and device flexibility:
 
-## Generating Predictions
+## 🔮 Generating Predictions  
 
 To run inference with a trained model:
 
@@ -75,7 +89,7 @@ Where `N` is the number of GPUs to use.
   - Output directory paths
 
 
-## Data Annotation
+## 🏷️ Data Annotation  
 
 This process uses `GPT-4.1` via the OpenAI API to generate natural language descriptions for CAD modeling sequences. We utilize minimal JSONs representations and Blender renders from the [Text2CAD Hugging Face dataset](https://huggingface.co/datasets/SadilKhan/Text2CAD):  
 

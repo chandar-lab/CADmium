@@ -11,8 +11,8 @@ import mathutils
 
 def main():
 
-    fusion_dir = '/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/data/Fusion360/r1.0.1/reconstruction'
-    uids_json = os.listdir('/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/data/fusion360/Fusion360/r1.0.1/reconstruction')
+    fusion_dir = 'data/Fusion360/r1.0.1/reconstruction'
+    uids_json = os.listdir('data/fusion360/Fusion360/r1.0.1/reconstruction')
 
     files = [f for f in os.listdir(fusion_dir) if len(f.split('_')) == 3]
 #files = np.array(os.listdir(fusion_dir))
@@ -21,7 +21,7 @@ def main():
 
     views = ['top', 'bottom', '000', '001', '002', '003', '004', '005', '006', '007']
 
-    OUTPUT_PARENT_DIR = "/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/data/fusion360_rgb_images/"
+    OUTPUT_PARENT_DIR = "data/fusion360_rgb_images/"
     
     for uid in tqdm(uids_render):
         OBJ_PATH = os.path.join(fusion_dir, f'{uid}.obj')
