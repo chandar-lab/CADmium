@@ -36,11 +36,13 @@ def process_results(result_dir: str):
                     print(f"Error while processing", name, df['pred_response_dict'][i])
                     print(e)
                     failed += 1
+                    with open(json_file_path, 'w') as f:
+                        f.write(str(df['pred_response'][i].replace('null', 'None')))
                     pbar.set_postfix(done=done, failed=failed)
                     # pass  # Ignore errors during JSON dumping
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("result_dir", type=str, help="Name of the result directory to process.")
+    parser.add_argument("--result_dir", type=str, help="Name of the result directory to process.")
     args = parser.parse_args()
     process_results(args.result_dir)

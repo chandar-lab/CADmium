@@ -139,6 +139,24 @@ done
 wait
 ```
 
+## ⚙️ Metric Calculations
+To compute the metrics for the reconstructed samples, the first step is to copy the generated JSON content of each sample present in `results.csv` in the `results/` folder into a separate file. To perform this, run the command below. 
+
+```bash
+python cadmium/src/utils/save_results_json.py --result_dir <path/to/results/dir/containing/results.csv/file>
+```
+The JSON files for all the samples will hence be stored in `cadmium/src/data/generated_jsons/<dir_name>`
+
+Note: The above command works for DeepCAD Test data. 
+
+These JSONs can now be used for computing metrics, by following the command below. 
+
+```bash
+python cadmium/src/utils/Evaluation/eval_seq.py --input_path cadmium/src/data/generated_jsons/<dir_name> --output_dir .
+```
+
+For the metrics proposed by CAD-MLLM, we use the codes from https://github.com/DavidXu-JJ/CAD-MLLM-metrics
+
 ## License
 
 Licensed under the MIT License.

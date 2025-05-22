@@ -31,7 +31,6 @@ def remove_nulls(d):
         return d
 
 def main():
-    os.chdir("/home/mila/p/prashant.govindarajan/scratch/objgen_project/LLM4CAD/llm4cad/utils/Evaluation")
     parser=argparse.ArgumentParser(description="Evaluation")
     parser.add_argument("--input_path",help="Predicted CAD Sequence in pkl format",required=True)
     parser.add_argument("--output_dir",help="Output dir",required=True)
@@ -74,21 +73,7 @@ def main():
 
 def generate_analysis_report(uids, input_path,output_path, stl_path,logger,verbose,level, dataset):
     report_df = pd.DataFrame() # Dataframe for analysis
-    # cm=np.zeros((4,4)) # Confusion Matrix
 
-    # uids=list(data.keys())
-
-    # for uid in tqdm(uids):
-    #     try:
-    #         pred_json = json.load(open(os.path.join(input_path, f"{uid.split('/')[0]}/{uid.split('/')[1]}/{uid.split('/')[1]}.json")))
-    #         gt_json = json.load(open(os.path.join('../../data/text2cad_v1.1/jsons',
-    #                                             f"{uid}/minimal_json/{uid.split('/')[1]}.json")))
-    #         best_report_df=process_uid_json(uid,pred_json, gt_json,level=level)
-    #         if best_report_df is not None:
-    #             report_df=pd.concat([report_df,best_report_df])
-    #     except Exception as e:
-    #         continue
-    
     def compute_df(uid, level= "expert"):
         try:
             with warnings.catch_warnings():
@@ -206,25 +191,16 @@ def process_vec(pred_vec,gt_vec,bit,uid):
         #print(e)
         return None,None
 
-# def save_mesh(mesh, path):
-#     try:
-#         mesh.export(path)
-#     except Exception as e:
-#         # print(f"Error saving mesh: {e}")
-#         return None
-#     return path
 
-def calculate_SAV_score(pred_cad,gt_cad, uid, stl_path):
+def calculate_CADMium_scores(pred_cad,gt_cad):
     try:
         gt_cad.create_mesh()
         pred_cad.create_mesh()
-        save_mesh(pred_cad.mesh, os.path.join(stl_path, f"{uid}_pred.stl"))
         watertightness = pred_cad.mesh.is_watertight 
         assert gt_cad.mesh.is_watertight
         assert pred_cad.mesh.is_watertight
-        sa_volume_gt = gt_cad.mesh.area / gt_cad.mesh.volume
-        sa_volume_pred = pred_cad.mesh.area / pred_cad.mesh.volume
 
+        # SD
         sphere_sa_gt = (((3 * gt_cad.mesh.volume) / (4 * np.pi)) ** (1/3))**2 * 4 * np.pi
         sphere_sa_pred = (((3 * pred_cad.mesh.volume) / (4 * np.pi)) ** (1/3))**2 * 4 * np.pi
         
@@ -246,7 +222,6 @@ def calculate_SAV_score(pred_cad,gt_cad, uid, stl_path):
         pred_curvature = trimesh.curvature.discrete_mean_curvature_measure(pred_cad.mesh, pred_cad.mesh.vertices, 0.02).mean()
 
         #curvature error
-
         curvature_error = np.abs(gt_curvature - pred_curvature)
     except Exception as e:
         SAV = -1
@@ -271,7 +246,7 @@ def process_min_json(pred,gt,uid,bit, stl_path):
     ) * 1000
     report_df['cd'] = cd
 
-    sav_dist, euler_score, curvature, watertightness = calculate_SAV_score(pred_cad, gt_cad, uid, stl_path)
+    sav_dist, euler_score, curvature, watertightness = calculate_CADMium_scores(pred_cad, gt_cad)
     try:
         pred_cad.mesh.export(os.path.join(stl_path, f"{uid.split('/')[-1]}_pred.stl"))
     except:
@@ -301,9 +276,6 @@ def process_uid_json(uid, pred, gt,level,stl_path):
     best_index = 0
     df, _ = process_min_json(pred, gt, uid, 8, stl_path)
     return df
-
-    # except Exception as e:
-    #     return None
 
 if __name__=="__main__":
     main()
