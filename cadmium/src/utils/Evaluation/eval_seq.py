@@ -167,11 +167,6 @@ def generate_analysis_report(uids, input_path,output_path, stl_path,logger,verbo
         eval_dict['cd']['mean']=report_df['cd'][report_df['cd']>0].mean()
         eval_dict['invalidity_ratio_percentage'] = (1.0 - report_df['cd'][report_df['cd']>=0].count()/len(uids)) * 100.0 ## Change this to len(test_data)       
 
-        # Update SAV Score
-        eval_dict['sav']={}
-        eval_dict['sav']['median']=report_df['sav'][report_df['sav']>0].median()
-        eval_dict['sav']['mean']=report_df['sav'][report_df['sav']>0].mean()  
-
         # Update SAV Distance
         eval_dict['sav_distance']= report_df['sav_distance'][report_df['sav_distance']>=0].mean()
 
@@ -232,9 +227,8 @@ def calculate_SAV_score(pred_cad,gt_cad, uid, stl_path):
 
         sphere_sa_gt = (((3 * gt_cad.mesh.volume) / (4 * np.pi)) ** (1/3))**2 * 4 * np.pi
         sphere_sa_pred = (((3 * pred_cad.mesh.volume) / (4 * np.pi)) ** (1/3))**2 * 4 * np.pi
-        SAV = 1.0  #(sa_volume_pred / (sphere_sa_pred/pred_cad.mesh.volume)) / (sa_volume_gt / (sphere_sa_gt/gt_cad.mesh.volume))
         
-        SAV_distance = abs(sphere_sa_pred/sa_volume_pred - sphere_sa_gt/sa_volume_gt)
+        SAV_distance = abs(sphere_sa_pred/pred_cad.mesh.area - sphere_sa_gt/gt_cad.mesh.area)
 
         # Now calculate Euler Characteristic
         gt_cad.mesh.remove_unreferenced_vertices()
@@ -254,14 +248,13 @@ def calculate_SAV_score(pred_cad,gt_cad, uid, stl_path):
         #curvature error
 
         curvature_error = np.abs(gt_curvature - pred_curvature)
-        assert not np.isnan(SAV) or not np.isinf(SAV)
     except Exception as e:
         SAV = -1
         SAV_distance = -1
         euler_score = -1
         curvature_error = -np.inf
     
-    return SAV, SAV_distance, euler_score, curvature_error, watertightness
+    return SAV_distance, euler_score, curvature_error, watertightness
 
 
 def process_min_json(pred,gt,uid,bit, stl_path):
@@ -278,13 +271,12 @@ def process_min_json(pred,gt,uid,bit, stl_path):
     ) * 1000
     report_df['cd'] = cd
 
-    sav_score, sav_dist, euler_score, curvature, watertightness = calculate_SAV_score(pred_cad, gt_cad, uid, stl_path)
+    sav_dist, euler_score, curvature, watertightness = calculate_SAV_score(pred_cad, gt_cad, uid, stl_path)
     try:
         pred_cad.mesh.export(os.path.join(stl_path, f"{uid.split('/')[-1]}_pred.stl"))
     except:
         pass
 
-    report_df['sav'] = sav_score
     report_df['euler_score'] = euler_score
     report_df['curvature'] = curvature
     report_df['sav_distance'] = sav_dist
