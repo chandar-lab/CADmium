@@ -1,0 +1,14 @@
+seed: 42
+ 
+# ---------------------- Configuration for data -------------------------------- #
+data:
+  base_dir: "data"
+  dataset_path: "${data.base_dir}/cadmium_ds"
+  train_qwen_tokenized_parquet_path: '${data.base_dir}/train_json_qwen_tokenized.parquet'
+  validation_qwen_tokenized_parquet_path: "${data.base_dir}/validation_json_qwen_tokenized.parquet"
+  test_qwen_tokenized_parquet_path: "${data.base_dir}/test_json_qwen_tokenized.parquet"
+  max_length: 4096
+
+# ---------------------- Configuration for model ------------------------------ #
+model:
+  model_name : "Qwen/Qwen2.5-Coder-1.5B-Instruct"

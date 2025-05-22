@@ -71,3 +71,24 @@ STRICT RULES:
 """
 
 SYSTEM_MESSAGE = SYSTEM_MESSAGE_TEMPLATE.format(JSON_SCHEMA=re.sub('\s+',' ', JSON_SCHEMA))
+
+ANNOTATION_PROMPT_TEMPLATE = """You are an expert mechanical engineer tasked with creating clear, precise instructions for a text-to-CAD generator.
+
+I have a set of 9 multi-view images displaying a 3D model, as well as a JSON file describing the exact CAD operations used to construct the object.
+
+This is the json file:
+```json
+{json_desc}
+```
+
+Create a single, comprehensive text description of this 3D object that:
+- Describes all geometrical features accurately based on the operations and dimensions
+- Uses natural language as if a human designer were explaining how to model this object
+- Is written in second-person as instructions for a text-to-CAD system
+- Includes all critical dimensions and geometric relationships (note that you don't need to specify the unit of measurement for lengths)
+- Avoids redundancy while ensuring completeness
+- Focuses on the design intent and functional geometry
+- Answer only with the description. No introductory phrases, titles, commentary, summaries or conclusions
+
+Your description should be concise but complete, capturing every important geometric feature without unnecessary repetition.
+"""

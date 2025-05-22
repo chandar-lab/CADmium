@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import pandas as pd
+from datasets import Dataset, DatasetDict
 import os
 from omegaconf import DictConfig
 import hydra
@@ -7,14 +8,16 @@ from dotenv import dotenv_values
 import openai
 import base64
 import time
+import json
+from cadmium.src.utils.prompts import ANNOTATION_PROMPT_TEMPLATE
 
-##############################
-###          MAIN          ###
-##############################
+sections = [["0000", "0005"],] + [[f"{i:04d}", f"{i+4:04d}"] for i in range(6, 95, 5)] + [["0096", "0099"],]
+views = ["000", "001", "002", "003", "004", "005", "006", "007", "bottom", "top"]
+img_path_template = "data/text2cad_v1.1/rgb_images/rgb_images_1_{uid_section_start}_{uid_section_end}/{uid_start}/{uid_end}/mvi_rgb_blender/{uid_end}_final/{uid_end}_final_{view}.png"
+json_path_template = "data/text2cad_v1.1/jsons/{uid_start}/{uid_end}/minimal_json/{uid_end}.json"
 
 @hydra.main(version_base=None, config_path="../../config/", config_name="annotate")
 def main(config: DictConfig) -> None:
-    import json
 
     n_splits = getattr(config, "n_splits", 1)
     idx_split = getattr(config, "idx_split", 0)
@@ -26,13 +29,11 @@ def main(config: DictConfig) -> None:
     model_id = config.model.model_id
 
     df = pd.read_csv(config.data.original_annotations).reset_index(drop=True)
-
-    print("df shape:", df.shape)
+    uids = df['uid'].to_numpy()
 
     output_dir = config.data.output_dir
     os.makedirs(output_dir, exist_ok=True)
 
-    uids = df['uid'].to_numpy()
     # Split the uids list
     split_size = (len(uids) + n_splits - 1) // n_splits
     start = idx_split * split_size
@@ -41,6 +42,8 @@ def main(config: DictConfig) -> None:
 
     pbar = tqdm(split_uids, total=len(split_uids))
     pbar.set_description(f"Split {idx_split+1}/{n_splits}")
+
+    # ------- Generate annotations -------
 
     for uid_full in pbar:
         uid = uid_full.split("/") # 0044, 00448252
@@ -69,7 +72,7 @@ def main(config: DictConfig) -> None:
                 view=view
             ) for view in views]
 
-        prompt = prompt_template.format(
+        prompt = ANNOTATION_PROMPT_TEMPLATE.format(
                 json_desc=json_desc
             )
 
@@ -102,43 +105,64 @@ def main(config: DictConfig) -> None:
         with open(output_path, "w") as f:
             f.write(response.output_text)
 
+    # ------- Gather and save as HF dataset -------
+
+    output_dir = config.data.output_dir
+    annotated_df = []
+    for uid_start in tqdm(os.listdir(output_dir)):
+        for uid_end in os.listdir(os.path.join(output_dir, uid_start)):
+            if os.path.exists(os.path.join(output_dir, uid_start, uid_end, 'gpt_annotation.txt')):
+                annotated_df.append({
+                    'uid': uid_start + '/' + uid_end, 
+                    'annotation': open(os.path.join(output_dir, uid_start, uid_end, 'gpt_annotation.txt')).read()
+                })
+    annotated_df = pd.DataFrame(annotated_df)
+
+    json_descs = []
+    for uid in tqdm(uids):
+        uid_start, uid_end = uid.split('/')
+        desc_path = json_path_template.format(uid_start=uid_start, uid_end=uid_end)
+        if not os.path.exists(desc_path):
+            print(f"File {desc_path} does not exist")
+            continue
+        with open(desc_path, 'r') as f:
+            j = json.load(f)
+        # Remove unwanted fields
+        j.pop('final_name', None)
+        j.pop('final_shape', None)
+        json_desc = json.dumps(j)
+        json_descs.append({
+            'uid': uid,
+            'json_desc': json_desc
+        })
+    json_descs = pd.DataFrame(json_descs)
+    df = annotated_df.merge(json_descs, on='uid', how='left')
+
+    splits_path = os.path.join(config.data.base_dir, 'train_test_val.json')
+    splits = json.load(open(splits_path, 'r'))
+
+    df_train = df[df['uid'].isin(splits['train'])]
+    df_val = df[df['uid'].isin(splits['validation'])]
+    df_test = df[df['uid'].isin(splits['test'])]
+
+    train_dataset = Dataset.from_pandas(df_train, preserve_index=False)
+    val_dataset = Dataset.from_pandas(df_val, preserve_index=False)
+    test_dataset = Dataset.from_pandas(df_test, preserve_index=False)
+
+    dataset = DatasetDict({
+        "train": train_dataset,
+        "validation": val_dataset,
+        "test": test_dataset
+    })
+
+    dataset.save_to_disk(config.data.base_dir.output_ds_path)
 
 
-###############################
-###          UTILS          ###
-###############################
 
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
-
-prompt_template = """You are an expert mechanical engineer tasked with creating clear, precise instructions for a text-to-CAD generator.
-
-I have a set of 9 multi-view images displaying a 3D model, as well as a JSON file describing the exact CAD operations used to construct the object.
-
-This is the json file:
-```json
-{json_desc}
-```
-
-Create a single, comprehensive text description of this 3D object that:
-- Describes all geometrical features accurately based on the operations and dimensions
-- Uses natural language as if a human designer were explaining how to model this object
-- Is written in second-person as instructions for a text-to-CAD system
-- Includes all critical dimensions and geometric relationships (note that you don't need to specify the unit of measurement for lengths)
-- Avoids redundancy while ensuring completeness
-- Focuses on the design intent and functional geometry
-- Answer only with the description. No introductory phrases, titles, commentary, summaries or conclusions
-
-Your description should be concise but complete, capturing every important geometric feature without unnecessary repetition.
-"""
-
-sections = [["0000", "0005"],] + [[f"{i:04d}", f"{i+4:04d}"] for i in range(6, 95, 5)] + [["0096", "0099"],]
-views = ["000", "001", "002", "003", "004", "005", "006", "007", "bottom", "top"]
-img_path_template = "/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/data/text2cad_v1.1/rgb_images/rgb_images_1_{uid_section_start}_{uid_section_end}/{uid_start}/{uid_end}/mvi_rgb_blender/{uid_end}_final/{uid_end}_final_{view}.png"
-json_path_template = "/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/data/text2cad_v1.1/jsons/{uid_start}/{uid_end}/minimal_json/{uid_end}.json"
-
 
 def uid_to_section(uid):
     """
@@ -150,10 +174,5 @@ def uid_to_section(uid):
         if uid <= int(sec[1]):
             return sec
 
-
-
 if __name__ == "__main__":
     main()
-
-
-`
