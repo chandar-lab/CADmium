@@ -1,10 +1,9 @@
+# source: https://github.com/SadilKhan/Text2CAD
 import os, sys
 
 sys.path.append("..")
 sys.path.append("/".join(os.path.abspath(__file__).split("/")[:-1]))
 sys.path.append("/".join(os.path.abspath(__file__).split("/")[:-2]))
-# from Cad_VLM.models.text2cad import Text2CAD
-# from CadSeqProc.utility.macro import MAX_CAD_SEQUENCE_LENGTH, N_BIT
 from llm4cad.utils.CadSeqProc.cad_sequence import CADSequence
 import gradio as gr
 import yaml
@@ -25,27 +24,6 @@ def load_model(config, device):
         torch_dtype=torch.float16,  
         ).to(device)
     
-
-
-        
-    # cad_config = config["cad_decoder"]
-    # cad_config["cad_seq_len"] = MAX_CAD_SEQUENCE_LENGTH
-    # text2cad = Text2CAD(text_config=config["text_encoder"], cad_config=cad_config).to(
-    #     device
-    # )
-
-    # if config["test"]["checkpoint_path"] is not None:
-    #     checkpoint_file = config["test"]["checkpoint_path"]
-
-    #     checkpoint = torch.load(checkpoint_file, map_location=device)
-    #     pretrained_dict = {}
-    #     for key, value in checkpoint["model_state_dict"].items():
-    #         if key.split(".")[0] == "module":
-    #             pretrained_dict[".".join(key.split(".")[1:])] = value
-    #         else:
-    #             pretrained_dict[key] = value
-
-    #     text2cad.load_state_dict(pretrained_dict, strict=False)
     llm4cad.eval()
     return llm4cad
 
@@ -91,14 +69,6 @@ def test_model(model, text, config, device):
             attention_mask=attention_mask.to(device),
             max_new_tokens=4096,
             do_sample=False,
-            # early_stopping=True,
-            # no_repeat_ngram_size=2,
-            # do_sample=True,
-            # top_k=1,
-            # top_p=0.95,
-            # temperature=0.6,
-            # num_return_sequences=1,
-            # pad_token_id=tokenizer.pad_token_id,
         )
 
     try:
@@ -156,9 +126,9 @@ examples = [
 ]
 
 
-title = "Our 7B Model: Hopefully better than Text2CAD 😉"
+title = "CADmium - Fine-Tuning Code Language Models for Text-Driven Sequential CAD Design"
 description = """
-Generate 3D CAD models from text prompts of varying complexity, from beginner-level descriptions to expert-level specifications.
+Fine-tuning code LLMs for the text-to-CAD problem.
 
 <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
 
