@@ -1,5 +1,6 @@
-# Ignore CSV files and checkpoint directories
+# Ignore CSV/IPYNB files and checkpoint directories
 *.csv
+*.ipynb
 ckpts/
 
 # Ignore data directories

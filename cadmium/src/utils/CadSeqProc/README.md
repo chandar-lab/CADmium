@@ -1,5 +1,5 @@
+This folder contains src for processing the DeepCAD Jsons. The utility codes in CADSeqProc are borrowed from https://github.com/SadilKhan/Text2CAD
 
-This folder contains src for processing the DeepCAD Jsons.
 
 
 ### 1. Json to Vector Representation

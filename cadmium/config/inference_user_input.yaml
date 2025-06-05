@@ -1,0 +1,60 @@
+# ---------------------- Configuration for text encoder ---------------------- #
+text_encoder:
+  # ----------------- Configuration for the Base Text Embedder ----------------- #
+  text_embedder:
+    # Name of the text encoder model
+    model_name: "bert_large_uncased"
+    # Maximum Text Sequence Length
+    max_seq_len: 512
+    # Cache Directory
+    cache_dir: "."
+
+  # ----------------- Configuration for the Adaptive Layer ----------------- #
+  adaptive_layer:
+    # Input dimension of the text encoder (1024 for bert, else 4096)
+    in_dim: 1024
+    # Output dimension of the text encoder (1024 for bert, else 4096)
+    out_dim: 1024
+    # Number of attention heads in the text encoder
+    num_heads: 8
+    # Dropout probability in the text encoder
+    dropout: 0.1
+
+# ----------------------- Configuration for CAD Decoder ---------------------- #
+cad_decoder:
+  # Dimension of the latent variable z in the CAD decoder (1024 for bert, else 4096)
+  tdim: 1024
+  # Dimension of the state variable s in the CAD decoder
+  cdim: 256
+  # Number of transformer layers in the CAD decoder
+  num_layers: 8
+  # Number of attention heads in each layer of the CAD decoder
+  num_heads: 8
+  # Dropout probability in the CAD decoder
+  dropout: 0.1
+  # Starting level for channel attention in the CAD decoder
+  ca_level_start: 2
+
+
+# --------------------- Configuration related to inference -------------------- #
+test:
+  # Batch size for inference
+  batch_size: 1
+  # Number of workers for the DataLoader during inference
+  num_workers: 30
+  # Prefetch factor for the DataLoader during inference
+  prefetch_factor: 10
+  # Directory for logging inference information
+  log_dir: "logs"
+  # Path to saved model checkpoint (optional)
+  checkpoint_path: "path/to/checkpoint"
+  nucleus_prob: 0
+  sampling_type: "max"
+  prompt_file: "YOUR PROMPT FILE"
+
+# ------------------------------ Debug mode flag ----------------------------- #
+debug: False
+
+# --------------- Additional information (leave empty for now) --------------- #
+
+info: "Inference"

@@ -157,6 +157,12 @@ python cadmium/src/utils/Evaluation/eval_seq.py --input_path cadmium/src/data/ge
 
 For the metrics proposed by CAD-MLLM, we use the codes from https://github.com/DavidXu-JJ/CAD-MLLM-metrics
 
+## ▶️ Demo
+Provide the path to the checkpoint and other suitable arguments in `cadmium/config/inference_user_input.yaml`
+```bash
+cd cadmium/src/utils/Demo
+gradio app.py
+```
 ## License
 
 Licensed under the MIT License.
