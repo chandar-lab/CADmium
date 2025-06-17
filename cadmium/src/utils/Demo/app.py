@@ -12,9 +12,6 @@ import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from types import SimpleNamespace
 
-import os
-
-
 def load_model(config, device):
     # -------------------------------- Load Model -------------------------------- #
 
