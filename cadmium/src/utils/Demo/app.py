@@ -53,7 +53,7 @@ def test_model(model, text, config, device):
     # if not isinstance(text, list):
     #     text = [text]
     text = format_prompt(text, SYSTEM_MESSAGE)
-    with open("inpt_prompt.txt", "w") as f:
+    with open("input_prompt.txt", "w") as f:
         f.write(text)
     inputs = tokenizer(text, return_tensors="pt", padding=False)
 
