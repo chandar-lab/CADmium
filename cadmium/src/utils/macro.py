@@ -43,4 +43,4 @@ CAD_CLASS_INFO = {
     'flag_size': ONE_EXT_SEQ_LENGTH+2 # +2 for sketch and padding
 }
 
-DATA_DIR = '/home/mila/b/baldelld/scratch/LLM4CAD/cadmium/data'
+DATA_DIR = '/scratch/LLM4CAD/cadmium/data'
