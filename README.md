@@ -18,6 +18,23 @@ The folder contains the following zip files:
 * `cadmium_ds.zip`
 * `fusion360_ds.zip`
 
+
+## 💾 Models and Datasets
+
+All fine-tuned models and datasets are available on the Hugging Face Hub under the [CRL-CADmium organization](https://huggingface.co/CRL-CADmium).
+
+### Models
+
+  - [CRL-CADmium/CADmium-1.5B](https://huggingface.co/CRL-CADmium/CADmium-1.5B)
+  - [CRL-CADmium/CADmium-3B](https://huggingface.co/CRL-CADmium/CADmium-3B)
+  - [CRL-CADmium/CADmium-7B](https://huggingface.co/CRL-CADmium/CADmium-7B)
+  - [CRL-CADmium/CADmium-14B](https://huggingface.co/CRL-CADmium/CADmium-14B)
+
+### Datasets
+
+  - [CRL-CADmium/CADmium-ds](https://huggingface.co/datasets/CRL-CADmium/CADmium-ds)
+  - [CRL-CADmium/Fusion360-ds](https://huggingface.co/datasets/CRL-CADmium/Fusion360-ds)
+
 ## 🚀 Quick Setup  
 
 Ensure Anaconda (or Miniconda) is installed. From the project root directory, run the following to create the environment and install dependencies:
