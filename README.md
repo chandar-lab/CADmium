@@ -7,20 +7,6 @@ This repository implements the paper "*CADmium: Fine-Tuning Code Language Models
 
 ## 💾 Models and Datasets
 
-The fine-tuned models (**cadmium-1.5b**, **cadmium-3b**, **cadmium-7b**) and datasets (**cadmium_ds**, **fusion360_ds**) are available for download from the following anonymized Google Drive link:
-
-[Download Models and Datasets](https://drive.google.com/drive/folders/1V5q4uErjwrMYBkmDiU6HCHgRjCXenDfP?usp=share_link)
-
-The folder contains the following zip files:
-* `cadmium-1.5b-checkpoint-29576.zip`
-* `cadmium-3b-checkpoint-29576.zip`
-* `cadmium-7b-checkpoint-29576.zip`
-* `cadmium_ds.zip`
-* `fusion360_ds.zip`
-
-
-## 💾 Models and Datasets
-
 All fine-tuned models and datasets are available on the Hugging Face Hub under the [CRL-CADmium organization](https://huggingface.co/CRL-CADmium).
 
 ### Models
