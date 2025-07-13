@@ -7,19 +7,19 @@ This repository implements the paper "*CADmium: Fine-Tuning Code Language Models
 
 ## 💾 Models and Datasets
 
-All fine-tuned models and datasets are available on the Hugging Face Hub under the [CRL-CADmium organization](https://huggingface.co/collections/chandar-lab/cadmium-6866b402be81f39321af98d4).
+All fine-tuned models and datasets are available on the Hugging Face Hub under the [CADmium collection](https://huggingface.co/collections/chandar-lab/cadmium-6866b402be81f39321af98d4).
 
 ### Models
 
-  - [CRL-CADmium/CADmium-1.5B](https://huggingface.co/chandar-lab/CADmium-1.5B)
-  - [CRL-CADmium/CADmium-3B](https://huggingface.co/chandar-lab/CADmium-3B)
-  - [CRL-CADmium/CADmium-7B](https://huggingface.co/chandar-lab/CADmium-7B)
-  - [CRL-CADmium/CADmium-14B](https://huggingface.co/chandar-lab/CADmium-14B)
+  - [chandar-lab/CADmium-1.5B](https://huggingface.co/chandar-lab/CADmium-1.5B)
+  - [chandar-lab/CADmium-3B](https://huggingface.co/chandar-lab/CADmium-3B)
+  - [chandar-lab/CADmium-7B](https://huggingface.co/chandar-lab/CADmium-7B)
+  - [chandar-lab/CADmium-14B](https://huggingface.co/chandar-lab/CADmium-14B)
 
 ### Datasets
 
-  - [CRL-CADmium/CADmium-ds](https://huggingface.co/datasets/chandar-lab/CADmium-ds)
-  - [CRL-CADmium/Fusion360-ds](https://huggingface.co/datasets/chandar-lab/Fusion360-ds)
+  - [chandar-lab/CADmium-ds](https://huggingface.co/datasets/chandar-lab/CADmium-ds)
+  - [chandar-lab/Fusion360-ds](https://huggingface.co/datasets/chandar-lab/Fusion360-ds)
 
 ## 🚀 Quick Setup  
 
