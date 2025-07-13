@@ -29,8 +29,6 @@ Ensure Anaconda (or Miniconda) is installed. From the project root directory, ru
 conda deactivate
 conda create --prefix=venv python=3.11 -y
 conda activate venv 
-# Note: If 'conda activate venv' doesn't target the local './venv' directory, 
-# you might need to use 'conda activate ./venv' instead.
 conda install -c conda-forge pythonocc-core -y
 pip install -r requirements.txt
 pip install -e .
