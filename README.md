@@ -7,16 +7,19 @@ This repository implements the paper "*CADmium: Fine-Tuning Code Language Models
 
 ## 💾 Models and Datasets
 
-The fine-tuned models (**cadmium-1.5b**, **cadmium-3b**, **cadmium-7b**) and datasets (**cadmium_ds**, **fusion360_ds**) are available for download from the following anonymized Google Drive link:
+All fine-tuned models and datasets are available on the Hugging Face Hub under the [CADmium collection](https://huggingface.co/collections/chandar-lab/cadmium-6866b402be81f39321af98d4).
 
-[Download Models and Datasets](https://drive.google.com/drive/folders/1V5q4uErjwrMYBkmDiU6HCHgRjCXenDfP?usp=share_link)
+### Models
 
-The folder contains the following zip files:
-* `cadmium-1.5b-checkpoint-29576.zip`
-* `cadmium-3b-checkpoint-29576.zip`
-* `cadmium-7b-checkpoint-29576.zip`
-* `cadmium_ds.zip`
-* `fusion360_ds.zip`
+  - [chandar-lab/CADmium-1.5B](https://huggingface.co/chandar-lab/CADmium-1.5B)
+  - [chandar-lab/CADmium-3B](https://huggingface.co/chandar-lab/CADmium-3B)
+  - [chandar-lab/CADmium-7B](https://huggingface.co/chandar-lab/CADmium-7B)
+  - [chandar-lab/CADmium-14B](https://huggingface.co/chandar-lab/CADmium-14B)
+
+### Datasets
+
+  - [chandar-lab/CADmium-ds](https://huggingface.co/datasets/chandar-lab/CADmium-ds)
+  - [chandar-lab/Fusion360-ds](https://huggingface.co/datasets/chandar-lab/Fusion360-ds)
 
 ## 🚀 Quick Setup  
 
@@ -26,8 +29,6 @@ Ensure Anaconda (or Miniconda) is installed. From the project root directory, ru
 conda deactivate
 conda create --prefix=venv python=3.11 -y
 conda activate venv 
-# Note: If 'conda activate venv' doesn't target the local './venv' directory, 
-# you might need to use 'conda activate ./venv' instead.
 conda install -c conda-forge pythonocc-core -y
 pip install -r requirements.txt
 pip install -e .
