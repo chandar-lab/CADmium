@@ -5,6 +5,11 @@
 
 This repository implements the paper "*CADmium: Fine-Tuning Code Language Models for Text-Driven Sequential CAD Design*".
 
+## 🚨 News
+
+* **[January 2026]** Our paper has been accepted to [TMLR](https://openreview.net/forum?id=lExqWvQht8)!
+* **[July 2025]** The paper is available on [arXiv](https://arxiv.org/abs/2507.09792).
+
 ## 💾 Models and Datasets
 
 All fine-tuned models and datasets are available on the Hugging Face Hub under the [CADmium collection](https://huggingface.co/collections/chandar-lab/cadmium-6866b402be81f39321af98d4).
