@@ -39,7 +39,6 @@ import datetime
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
-from cadmium.src.dataprep.t2c_dataset import Text2CADJSON_Dataset
 from transformers import get_linear_schedule_with_warmup
 import random
 import gc
@@ -388,4 +387,3 @@ def save_generated_jsons(result_dir: str):
                 except Exception as e:
                     print(name)
                     # pass  # Ignore errors during JSON dumping
-

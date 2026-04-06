@@ -25,7 +25,6 @@ from huggingface_hub import login
 
 # from peft import LoraConfig
 
-from cadmium.src.dataprep.t2c_dataset import Text2CADJSON_Dataset
 import random
 from loguru import logger
 from cadmium.src.utils.prompts import SYSTEM_MESSAGE
